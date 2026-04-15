@@ -29,6 +29,7 @@
     "vite": "^8.0.4"
   },
   "dependencies": {
-    "pixi.js": "^8.18.1"
+    "pixi.js": "^8.18.1",
+    "polygon-clipping": "^0.15.7"
   }
 }

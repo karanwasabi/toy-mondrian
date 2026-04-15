@@ -1,4 +1,4 @@
-import { PIECE_BAG_ORDER, PIECE_COLOR_BY_KIND } from './constants';
+import { MONDRIAN_COLOR_HEX, PIECE_BAG_ORDER, PIECE_COLOR_BY_KIND } from './constants';
 import { nextInt } from './random';
 import { CellColorId, type PieceKind, type RngState } from './types';
 
@@ -27,4 +27,8 @@ export function getRandomMondrianColorId(rngState: RngState): { colorId: CellCol
     colorId: MONDRIAN_SPAWN_COLORS[index],
     rngState: nextState,
   };
+}
+
+export function getColorHex(colorId: CellColorId): string {
+  return MONDRIAN_COLOR_HEX[colorId];
 }
