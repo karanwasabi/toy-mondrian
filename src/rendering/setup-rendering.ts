@@ -1,4 +1,5 @@
-import { Application, Container, Graphics } from 'pixi.js';
+import { Container, Graphics } from 'pixi.js';
+import type { Application } from 'pixi.js';
 import type { GameState } from '../engine/game-state';
 
 const BOARD_ASPECT_RATIO = 1 / 2;
