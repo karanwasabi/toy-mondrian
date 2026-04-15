@@ -1,12 +1,12 @@
 export type MatrixSize = {
-  width: number
-  height: number
-}
+  width: number;
+  height: number;
+};
 
 export type GameState = {
-  boardSize: MatrixSize
-  tick: number
-}
+  boardSize: MatrixSize;
+  tick: number;
+};
 
 export function createInitialGameState(): GameState {
   return {
@@ -15,5 +15,5 @@ export function createInitialGameState(): GameState {
       height: 20,
     },
     tick: 0,
-  }
+  };
 }
