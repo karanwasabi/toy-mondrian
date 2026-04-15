@@ -1,5 +1,13 @@
 import { isValidPosition, willCollideAtOffset } from './collision';
-import { LINE_CLEAR_BASE_SCORE, PIECE_LOCAL_CELLS, SPAWN_Y } from './constants';
+import {
+  GRAVITY_ACCELERATION_PER_SECOND_MS,
+  INITIAL_GRAVITY_MS,
+  LINE_CLEAR_BASE_SCORE,
+  MIN_GRAVITY_MS,
+  PASSIVE_SCORE_PER_SECOND,
+  PIECE_LOCAL_CELLS,
+  SPAWN_Y,
+} from './constants';
 import { processLineClears } from './line-clear';
 import { getNextPiece } from './piece-bag';
 import {
@@ -52,39 +60,41 @@ function tryMoveHorizontal(state: GameState, deltaX: number): GameState {
 }
 
 function applyTick(state: GameState, action: TickAction): GameState {
-  if (state.lockPending) {
-    return resolveLockPending(state);
+  const timeProgressedState = applyTimeProgression(state, action.deltaMs);
+
+  if (timeProgressedState.lockPending) {
+    return resolveLockPending(timeProgressedState);
   }
 
-  if (!state.activePiece) {
+  if (!timeProgressedState.activePiece) {
     return {
-      ...state,
-      tick: state.tick + 1,
+      ...timeProgressedState,
+      tick: timeProgressedState.tick + 1,
     };
   }
 
-  const nextDropCounter = state.dropCounterMs + action.deltaMs;
-  if (nextDropCounter < state.gravityMs) {
+  const nextDropCounter = timeProgressedState.dropCounterMs + action.deltaMs;
+  if (nextDropCounter < timeProgressedState.gravityMs) {
     return {
-      ...state,
-      tick: state.tick + 1,
+      ...timeProgressedState,
+      tick: timeProgressedState.tick + 1,
       dropCounterMs: nextDropCounter,
     };
   }
 
-  if (willCollideAtOffset(state, state.activePiece, 0, 1)) {
-    return resolveLockPending(triggerLockPiece(state));
+  if (willCollideAtOffset(timeProgressedState, timeProgressedState.activePiece, 0, 1)) {
+    return resolveLockPending(triggerLockPiece(timeProgressedState));
   }
 
   return {
-    ...state,
-    tick: state.tick + 1,
-    dropCounterMs: nextDropCounter - state.gravityMs,
+    ...timeProgressedState,
+    tick: timeProgressedState.tick + 1,
+    dropCounterMs: nextDropCounter - timeProgressedState.gravityMs,
     activePiece: {
-      ...state.activePiece,
+      ...timeProgressedState.activePiece,
       position: {
-        x: state.activePiece.position.x,
-        y: state.activePiece.position.y + 1,
+        x: timeProgressedState.activePiece.position.x,
+        y: timeProgressedState.activePiece.position.y + 1,
       },
     },
   };
@@ -184,4 +194,34 @@ function getPieceWidth(cells: readonly { x: number; y: number }[]): number {
     }
   }
   return maxX + 1;
+}
+
+function applyTimeProgression(state: GameState, deltaMs: number): GameState {
+  if (deltaMs <= 0) {
+    return state;
+  }
+
+  const nextElapsedMs = state.elapsedMs + deltaMs;
+  const wholeSecondsElapsed = Math.floor(nextElapsedMs / 1000);
+  const newSeconds = wholeSecondsElapsed - state.secondsElapsed;
+
+  if (newSeconds <= 0) {
+    return {
+      ...state,
+      elapsedMs: nextElapsedMs,
+    };
+  }
+
+  const nextGravity = Math.max(
+    MIN_GRAVITY_MS,
+    INITIAL_GRAVITY_MS - wholeSecondsElapsed * GRAVITY_ACCELERATION_PER_SECOND_MS
+  );
+
+  return {
+    ...state,
+    elapsedMs: nextElapsedMs,
+    secondsElapsed: wholeSecondsElapsed,
+    score: state.score + newSeconds * PASSIVE_SCORE_PER_SECOND,
+    gravityMs: nextGravity,
+  };
 }

@@ -86,6 +86,7 @@ export type GameState = {
   cells: Uint8Array;
   activePiece: ActivePiece | null;
   score: number;
+  elapsedMs: number;
   secondsElapsed: number;
   gravityMs: number;
   dropCounterMs: number;
