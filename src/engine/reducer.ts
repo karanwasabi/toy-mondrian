@@ -19,9 +19,15 @@ import {
   type TickAction,
 } from './types';
 
+const SOFT_DROP_INTERVAL_MS = 50;
+
 export function reduce(state: GameState, action: QueuedCommand | TickAction): GameState {
   if (isTickAction(action)) {
     return applyTick(state, action);
+  }
+
+  if (state.phase === GamePhase.GalleryClosed) {
+    return state;
   }
 
   switch (action.command.type) {
@@ -31,6 +37,20 @@ export function reduce(state: GameState, action: QueuedCommand | TickAction): Ga
       return tryMoveHorizontal(state, 1);
     case 'RotateCW':
       return tryRotateClockwise(state);
+    case 'SoftDropStart':
+      return {
+        ...state,
+        softDropActive: true,
+      };
+    case 'SoftDropStop':
+      return {
+        ...state,
+        softDropActive: false,
+      };
+    case 'SoftDropStep':
+      return tryStepDrop(state);
+    case 'HardDrop':
+      return tryHardDrop(state);
     default:
       return state;
   }
@@ -97,6 +117,10 @@ function tryRotateClockwise(state: GameState): GameState {
 }
 
 function applyTick(state: GameState, action: TickAction): GameState {
+  if (state.phase === GamePhase.GalleryClosed) {
+    return state;
+  }
+
   const timeProgressedState = applyTimeProgression(state, action.deltaMs);
 
   if (timeProgressedState.lockPending) {
@@ -110,8 +134,9 @@ function applyTick(state: GameState, action: TickAction): GameState {
     };
   }
 
+  const activeDropInterval = timeProgressedState.softDropActive ? SOFT_DROP_INTERVAL_MS : timeProgressedState.gravityMs;
   const nextDropCounter = timeProgressedState.dropCounterMs + action.deltaMs;
-  if (nextDropCounter < timeProgressedState.gravityMs) {
+  if (nextDropCounter < activeDropInterval) {
     return {
       ...timeProgressedState,
       tick: timeProgressedState.tick + 1,
@@ -126,7 +151,7 @@ function applyTick(state: GameState, action: TickAction): GameState {
   return {
     ...timeProgressedState,
     tick: timeProgressedState.tick + 1,
-    dropCounterMs: nextDropCounter - timeProgressedState.gravityMs,
+    dropCounterMs: nextDropCounter - activeDropInterval,
     activePiece: {
       ...timeProgressedState.activePiece,
       position: {
@@ -134,6 +159,51 @@ function applyTick(state: GameState, action: TickAction): GameState {
         y: timeProgressedState.activePiece.position.y + 1,
       },
     },
+  };
+}
+
+function tryStepDrop(state: GameState): GameState {
+  if (!state.activePiece || state.lockPending) {
+    return state;
+  }
+
+  if (willCollideAtOffset(state, state.activePiece, 0, 1)) {
+    return triggerLockPiece(state);
+  }
+
+  return {
+    ...state,
+    activePiece: {
+      ...state.activePiece,
+      position: {
+        x: state.activePiece.position.x,
+        y: state.activePiece.position.y + 1,
+      },
+    },
+  };
+}
+
+function tryHardDrop(state: GameState): GameState {
+  if (!state.activePiece || state.lockPending) {
+    return state;
+  }
+
+  let finalY = state.activePiece.position.y;
+  while (!willCollideAtOffset(state, state.activePiece, 0, finalY + 1 - state.activePiece.position.y)) {
+    finalY += 1;
+  }
+
+  return {
+    ...state,
+    activePiece: {
+      ...state.activePiece,
+      position: {
+        x: state.activePiece.position.x,
+        y: finalY,
+      },
+    },
+    lockPending: true,
+    dropCounterMs: state.gravityMs,
   };
 }
 

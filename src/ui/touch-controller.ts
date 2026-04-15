@@ -1,6 +1,7 @@
 import type { InputCommand } from '../engine/types';
 
 type Dispatch = (cmd: InputCommand) => void;
+type CanDispatch = () => boolean;
 
 const TAP_MAX_DURATION_MS = 180;
 const TAP_MAX_MOVE_PX = 12;
@@ -17,11 +18,15 @@ type TouchState = {
   movedDistance: number;
 };
 
-export function setupTouch(dispatch: Dispatch): () => void {
+export function setupTouch(dispatch: Dispatch, canDispatch: CanDispatch = () => true): () => void {
   let activeTouchId: number | null = null;
   let touchState: TouchState | null = null;
 
   const onTouchStart = (event: TouchEvent): void => {
+    if (!canDispatch()) {
+      return;
+    }
+
     if (activeTouchId !== null || event.changedTouches.length === 0) {
       return;
     }
@@ -41,6 +46,12 @@ export function setupTouch(dispatch: Dispatch): () => void {
   };
 
   const onTouchMove = (event: TouchEvent): void => {
+    if (!canDispatch()) {
+      activeTouchId = null;
+      touchState = null;
+      return;
+    }
+
     if (activeTouchId === null || !touchState) {
       return;
     }
@@ -79,6 +90,12 @@ export function setupTouch(dispatch: Dispatch): () => void {
   };
 
   const onTouchEnd = (event: TouchEvent): void => {
+    if (!canDispatch()) {
+      activeTouchId = null;
+      touchState = null;
+      return;
+    }
+
     if (activeTouchId === null || !touchState) {
       return;
     }

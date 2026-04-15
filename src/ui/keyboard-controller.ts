@@ -1,8 +1,9 @@
 import type { InputCommand } from '../engine/types';
 
 type Dispatch = (cmd: InputCommand) => void;
+type CanDispatch = () => boolean;
 
-export function setupKeyboard(dispatch: Dispatch): () => void {
+export function setupKeyboard(dispatch: Dispatch, canDispatch: CanDispatch = () => true): () => void {
   const onKeyDown = (event: KeyboardEvent): void => {
     let command: InputCommand | null = null;
 
@@ -31,6 +32,9 @@ export function setupKeyboard(dispatch: Dispatch): () => void {
     }
 
     event.preventDefault();
+    if (!canDispatch()) {
+      return;
+    }
     dispatch(command);
   };
 
@@ -40,6 +44,9 @@ export function setupKeyboard(dispatch: Dispatch): () => void {
     }
 
     event.preventDefault();
+    if (!canDispatch()) {
+      return;
+    }
     dispatch({ type: 'SoftDropStop' });
   };
 

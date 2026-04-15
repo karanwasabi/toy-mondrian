@@ -1,5 +1,6 @@
 import './style.css';
 import { EngineRuntime } from './engine/runtime';
+import { GamePhase } from './engine/types';
 import { createPixiApp } from './rendering/pixi-app';
 import { MondrianScene } from './rendering/scene';
 import { createUIRoot } from './ui/create-ui-root';
@@ -22,8 +23,9 @@ async function bootstrap(): Promise<void> {
 
   const scene = new MondrianScene(app);
   const runtime = new EngineRuntime({ seed: 1 });
-  setupKeyboard((command) => runtime.enqueueCommand(command, 'keyboard'));
-  setupTouch((command) => runtime.enqueueCommand(command, 'touch'));
+  const canDispatchInput = (): boolean => runtime.getState().phase !== GamePhase.GalleryClosed;
+  setupKeyboard((command) => runtime.enqueueCommand(command, 'keyboard'), canDispatchInput);
+  setupTouch((command) => runtime.enqueueCommand(command, 'touch'), canDispatchInput);
 
   runtime.onSnapshot((state) => {
     scene.renderSnapshot(state);
