@@ -1,6 +1,6 @@
 import { PIECE_BAG_ORDER, PIECE_COLOR_BY_KIND } from './constants';
-import { nextInt, type RngState } from './random';
-import { CellColorId, type PieceKind } from './types';
+import { nextInt } from './random';
+import { CellColorId, type PieceKind, type RngState } from './types';
 
 const MONDRIAN_SPAWN_COLORS: readonly CellColorId[] = [
   CellColorId.Red,

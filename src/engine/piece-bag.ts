@@ -1,7 +1,7 @@
 import { PIECE_BAG_ORDER } from './constants';
 import { getRandomMondrianColorId } from './palette';
-import { nextInt, type RngState } from './random';
-import type { CellColorId, PieceBagState, PieceKind } from './types';
+import { nextInt } from './random';
+import type { CellColorId, PieceBagState, PieceKind, RngState } from './types';
 
 export type NextPieceResult = {
   pieceKind: PieceKind;

@@ -59,6 +59,11 @@ export type InputCommand =
   | { type: 'SoftDropStop' }
   | { type: 'HardDrop' };
 
+export type TickAction = {
+  type: 'TickAction';
+  deltaMs: number;
+};
+
 export type CommandSource = 'keyboard' | 'touch';
 
 export type QueuedCommand = {
@@ -72,6 +77,10 @@ export type PieceBagState = {
   queue: PieceKind[];
 };
 
+export type RngState = {
+  seed: number;
+};
+
 export type GameState = {
   boardSize: MatrixSize;
   cells: Uint8Array;
@@ -81,7 +90,9 @@ export type GameState = {
   gravityMs: number;
   dropCounterMs: number;
   softDropActive: boolean;
+  lockPending: boolean;
   phase: GamePhase;
   pieceBag: PieceBagState;
+  rngState: RngState;
   tick: number;
 };

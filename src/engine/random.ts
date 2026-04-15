@@ -1,6 +1,4 @@
-export type RngState = {
-  seed: number;
-};
+import type { RngState } from './types';
 
 export type RngNext<T> = {
   value: T;

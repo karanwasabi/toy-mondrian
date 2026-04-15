@@ -23,7 +23,7 @@ async function bootstrap(): Promise<void> {
   const uiRoot = createUIRoot();
   appHost.appendChild(uiRoot);
 
-  const gameState = createInitialGameState();
+  const gameState = createInitialGameState(1);
   setupRendering(app, gameState);
 }
 

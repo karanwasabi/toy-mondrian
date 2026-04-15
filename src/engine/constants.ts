@@ -15,6 +15,7 @@ export const TICK_RATE_HZ = 60;
 export const FIXED_TICK_MS = 1000 / TICK_RATE_HZ;
 
 export const SOFT_DROP_STEP_MS = 0;
+export const SPAWN_Y = 0;
 
 export const PIECE_BAG_ORDER: readonly PieceKind[] = [
   PieceKind.I,
@@ -42,4 +43,49 @@ export const MONDRIAN_COLOR_HEX: Readonly<Record<CellColorId, string>> = {
   [CellColorId.Blue]: '#0300AD',
   [CellColorId.Yellow]: '#FDDE06',
   [CellColorId.White]: '#F0F0F0',
+};
+
+export const PIECE_LOCAL_CELLS: Readonly<Record<PieceKind, readonly { x: number; y: number }[]>> = {
+  [PieceKind.I]: [
+    { x: 0, y: 1 },
+    { x: 1, y: 1 },
+    { x: 2, y: 1 },
+    { x: 3, y: 1 },
+  ],
+  [PieceKind.J]: [
+    { x: 0, y: 0 },
+    { x: 0, y: 1 },
+    { x: 1, y: 1 },
+    { x: 2, y: 1 },
+  ],
+  [PieceKind.L]: [
+    { x: 2, y: 0 },
+    { x: 0, y: 1 },
+    { x: 1, y: 1 },
+    { x: 2, y: 1 },
+  ],
+  [PieceKind.O]: [
+    { x: 1, y: 0 },
+    { x: 2, y: 0 },
+    { x: 1, y: 1 },
+    { x: 2, y: 1 },
+  ],
+  [PieceKind.S]: [
+    { x: 1, y: 0 },
+    { x: 2, y: 0 },
+    { x: 0, y: 1 },
+    { x: 1, y: 1 },
+  ],
+  [PieceKind.T]: [
+    { x: 1, y: 0 },
+    { x: 0, y: 1 },
+    { x: 1, y: 1 },
+    { x: 2, y: 1 },
+  ],
+  [PieceKind.Z]: [
+    { x: 0, y: 0 },
+    { x: 1, y: 0 },
+    { x: 1, y: 1 },
+    { x: 2, y: 1 },
+  ],
 };
