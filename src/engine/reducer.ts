@@ -29,6 +29,8 @@ export function reduce(state: GameState, action: QueuedCommand | TickAction): Ga
       return tryMoveHorizontal(state, -1);
     case 'MoveRight':
       return tryMoveHorizontal(state, 1);
+    case 'RotateCW':
+      return tryRotateClockwise(state);
     default:
       return state;
   }
@@ -57,6 +59,41 @@ function tryMoveHorizontal(state: GameState, deltaX: number): GameState {
       },
     },
   };
+}
+
+function tryRotateClockwise(state: GameState): GameState {
+  if (!state.activePiece || state.lockPending) {
+    return state;
+  }
+
+  const rotatedCells = rotateCellsClockwise(state.activePiece.cells);
+  const rotatedPiece: ActivePiece = {
+    ...state.activePiece,
+    rotation: ((state.activePiece.rotation + 1) % 4) as ActivePiece['rotation'],
+    cells: rotatedCells,
+  };
+
+  const wallKickOffsets = [0, 1, -1, 2, -2];
+  for (const offsetX of wallKickOffsets) {
+    const targetX = rotatedPiece.position.x + offsetX;
+    const targetY = rotatedPiece.position.y;
+    if (!isValidPosition(state, rotatedPiece, targetX, targetY)) {
+      continue;
+    }
+
+    return {
+      ...state,
+      activePiece: {
+        ...rotatedPiece,
+        position: {
+          x: targetX,
+          y: targetY,
+        },
+      },
+    };
+  }
+
+  return state;
 }
 
 function applyTick(state: GameState, action: TickAction): GameState {
@@ -194,6 +231,27 @@ function getPieceWidth(cells: readonly { x: number; y: number }[]): number {
     }
   }
   return maxX + 1;
+}
+
+function rotateCellsClockwise(cells: ActivePiece['cells']): ActivePiece['cells'] {
+  let maxX = 0;
+  let maxY = 0;
+
+  for (const cell of cells) {
+    if (cell.x > maxX) {
+      maxX = cell.x;
+    }
+    if (cell.y > maxY) {
+      maxY = cell.y;
+    }
+  }
+
+  const size = Math.max(maxX, maxY) + 1;
+  return cells.map((cell) => ({
+    x: size - 1 - cell.y,
+    y: cell.x,
+    color: cell.color,
+  }));
 }
 
 function applyTimeProgression(state: GameState, deltaMs: number): GameState {
