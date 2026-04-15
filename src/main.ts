@@ -1,10 +1,8 @@
 import './style.css';
-import { Application } from 'pixi.js';
-import { createInitialGameState } from './engine/game-state';
-import { setupRendering } from './rendering/setup-rendering';
+import { EngineRuntime } from './engine/runtime';
+import { createPixiApp } from './rendering/pixi-app';
+import { MondrianScene } from './rendering/scene';
 import { createUIRoot } from './ui/create-ui-root';
-
-const BACKGROUND_COLOR = 0xf0f0f0;
 
 async function bootstrap(): Promise<void> {
   const appHost = document.querySelector<HTMLDivElement>('#app');
@@ -12,19 +10,19 @@ async function bootstrap(): Promise<void> {
     throw new Error('Missing #app root element');
   }
 
-  const app = new Application();
-  await app.init({
-    background: BACKGROUND_COLOR,
-    resizeTo: window,
-    antialias: true,
-  });
+  const app = await createPixiApp();
   appHost.appendChild(app.canvas);
 
   const uiRoot = createUIRoot();
   appHost.appendChild(uiRoot);
 
-  const gameState = createInitialGameState(1);
-  setupRendering(app, gameState);
+  const scene = new MondrianScene(app);
+  const runtime = new EngineRuntime({ seed: 1 });
+  runtime.onSnapshot((state) => {
+    scene.renderSnapshot(state);
+  });
+
+  runtime.start();
 }
 
 void bootstrap();
