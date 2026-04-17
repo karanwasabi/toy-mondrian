@@ -11,6 +11,8 @@ type RuntimeOptions = {
 export class EngineRuntime {
   private state: GameState;
 
+  private seed: number;
+
   private listeners = new Set<SnapshotListener>();
 
   private queuedCommands: QueuedCommand[] = [];
@@ -22,6 +24,7 @@ export class EngineRuntime {
   private lastFrameTime = 0;
 
   constructor(options: RuntimeOptions) {
+    this.seed = options.seed;
     this.state = createInitialGameState(options.seed);
   }
 
@@ -63,6 +66,15 @@ export class EngineRuntime {
 
   getState(): GameState {
     return this.state;
+  }
+
+  restart(seed: number = this.seed): void {
+    this.seed = seed;
+    this.state = createInitialGameState(seed);
+    this.queuedCommands = [];
+    this.sequence = 0;
+    this.lastFrameTime = 0;
+    this.emitSnapshot();
   }
 
   private onFrame = (time: number): void => {

@@ -26,6 +26,8 @@ async function bootstrap(): Promise<void> {
 
   const app = await createPixiApp(canvasContainer);
   canvasContainer.appendChild(app.canvas);
+  const scene = new MondrianScene(app);
+  const runtime = new EngineRuntime({ seed: 1 });
 
   let latestState: GameState | null = null;
   const uiRoot = createUIRoot();
@@ -51,10 +53,11 @@ async function bootstrap(): Promise<void> {
       link.click();
       URL.revokeObjectURL(url);
     },
+    onRestart: () => {
+      runtime.restart(Date.now());
+    },
   });
 
-  const scene = new MondrianScene(app);
-  const runtime = new EngineRuntime({ seed: 1 });
   const canDispatchInput = (): boolean => runtime.getState().phase !== GamePhase.GalleryClosed;
   setupKeyboard((command) => runtime.enqueueCommand(command, 'keyboard'), canDispatchInput);
   setupTouch((command) => runtime.enqueueCommand(command, 'touch'), canDispatchInput);

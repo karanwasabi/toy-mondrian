@@ -121,7 +121,14 @@ function applyTick(state: GameState, action: TickAction): GameState {
     return state;
   }
 
-  const timeProgressedState = applyTimeProgression(state, action.deltaMs);
+  const runningState =
+    state.phase === GamePhase.Idle
+      ? {
+          ...state,
+          phase: GamePhase.Running,
+        }
+      : state;
+  const timeProgressedState = applyTimeProgression(runningState, action.deltaMs);
 
   if (timeProgressedState.lockPending) {
     return resolveLockPending(timeProgressedState);
