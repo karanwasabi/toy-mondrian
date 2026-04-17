@@ -1,6 +1,6 @@
 import { Application } from 'pixi.js';
 
-const BACKGROUND_COLOR = 0xf0f0f0;
+const BACKGROUND_COLOR = 0xffffff;
 
 export async function createPixiApp(hostElement: HTMLElement): Promise<Application> {
   const app = new Application();

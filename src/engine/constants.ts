@@ -42,7 +42,7 @@ export const MONDRIAN_COLOR_HEX: Readonly<Record<CellColorId, string>> = {
   [CellColorId.Red]: '#E70503',
   [CellColorId.Blue]: '#0300AD',
   [CellColorId.Yellow]: '#FDDE06',
-  [CellColorId.White]: '#F0F0F0',
+  [CellColorId.White]: '#FFFFFF',
 };
 
 export const PIECE_LOCAL_CELLS: Readonly<Record<PieceKind, readonly { x: number; y: number }[]>> = {

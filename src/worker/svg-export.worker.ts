@@ -40,6 +40,10 @@ self.addEventListener('message', (event: MessageEvent<GenerateSvgRequest>) => {
   self.postMessage(response);
 });
 
+/** Matches CPU board raster: 12px cells, 2px borders (see `compose-board-rgba.ts`). */
+const RASTER_CELL_UNITS = 12;
+const RASTER_BORDER_UNITS = 2;
+
 function buildSvgFromGrid(grid: Uint8Array, width: number, height: number, cellSize: number): string {
   const polygonsByColor = new Map<CellColorId, Polygon[]>();
   for (const colorId of COLOR_ORDER) {
@@ -61,6 +65,13 @@ function buildSvgFromGrid(grid: Uint8Array, width: number, height: number, cellS
     }
   }
 
+  const viewWidth = width * cellSize;
+  const viewHeight = height * cellSize;
+  const strokeWidth = (cellSize * RASTER_BORDER_UNITS) / RASTER_CELL_UNITS;
+  const viewPad = strokeWidth / 2;
+  const viewBoxW = viewWidth + strokeWidth;
+  const viewBoxH = viewHeight + strokeWidth;
+
   const paths: string[] = [];
   for (const colorId of COLOR_ORDER) {
     const polygons = polygonsByColor.get(colorId) ?? [];
@@ -76,15 +87,16 @@ function buildSvgFromGrid(grid: Uint8Array, width: number, height: number, cellS
     const d = toSvgPathData(merged, cellSize);
     const fill = getColorHex(colorId);
     paths.push(
-      `<path d="${d}" fill="${fill}" stroke="#111111" stroke-width="2" stroke-linejoin="miter" vector-effect="non-scaling-stroke" />`
+      `<path d="${d}" fill="${fill}" stroke="#111111" stroke-width="${strokeWidth}" stroke-linejoin="miter" stroke-linecap="butt" shape-rendering="crispEdges" />`
     );
   }
 
-  const viewWidth = width * cellSize;
-  const viewHeight = height * cellSize;
-  return [`<svg viewBox="0 0 ${viewWidth} ${viewHeight}" xmlns="http://www.w3.org/2000/svg">`, ...paths, '</svg>'].join(
-    ''
-  );
+  return [
+    `<svg viewBox="${-viewPad} ${-viewPad} ${viewBoxW} ${viewBoxH}" xmlns="http://www.w3.org/2000/svg">`,
+    `<rect x="0" y="0" width="${viewWidth}" height="${viewHeight}" fill="#ffffff" shape-rendering="crispEdges" />`,
+    ...paths,
+    '</svg>',
+  ].join('');
 }
 
 function cellSquarePolygon(x: number, y: number): Polygon {

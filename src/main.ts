@@ -6,7 +6,9 @@ import { MondrianScene } from './rendering/scene';
 import { createUIRoot } from './ui/create-ui-root';
 import { setupKeyboard } from './ui/keyboard-controller';
 import { setupTouch } from './ui/touch-controller';
-import { exportVectorArt } from './ui/gallery-export';
+import { exportBoardAs4kJpegBlob } from './ui/board-jpeg-export';
+import { createDownloadModal } from './ui/download-modal';
+import { exportVectorArtFromGameState } from './ui/gallery-export';
 import { setupHud, updateHud } from './ui/hud';
 
 function randomSeed(): number {
@@ -52,26 +54,40 @@ async function bootstrap(): Promise<void> {
   let latestState: GameState | null = null;
   const uiRoot = createUIRoot();
   sidebarContainer.appendChild(uiRoot);
-  setupHud(uiRoot, {
-    onDownloadVectorArt: async () => {
+
+  const triggerDownload = (blob: Blob, filename: string): void => {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const downloadModal = createDownloadModal(document.body, {
+    onDownloadVector: async () => {
       if (!latestState || latestState.phase !== GamePhase.GalleryClosed) {
         return;
       }
-
-      const svg = await exportVectorArt(
-        latestState.cells,
-        latestState.boardSize.width,
-        latestState.boardSize.height,
-        50
-      );
-
+      const svg = await exportVectorArtFromGameState(latestState, 50);
       const blob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = 'toy-mondrian.svg';
-      link.click();
-      URL.revokeObjectURL(url);
+      triggerDownload(blob, 'toy-mondrian.svg');
+    },
+    onDownloadImage: async () => {
+      if (!latestState || latestState.phase !== GamePhase.GalleryClosed) {
+        return;
+      }
+      const blob = await exportBoardAs4kJpegBlob(latestState);
+      triggerDownload(blob, 'toy-mondrian.jpg');
+    },
+  });
+
+  setupHud(uiRoot, {
+    onDownload: () => {
+      if (!latestState || latestState.phase !== GamePhase.GalleryClosed) {
+        return;
+      }
+      downloadModal.open();
     },
     onRestart: () => {
       runtime.restart(randomSeed());

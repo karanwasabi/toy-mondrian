@@ -17,7 +17,7 @@ let downloadButtonEl: HTMLButtonElement | null = null;
 let restartButtonEl: HTMLButtonElement | null = null;
 
 type SetupHudOptions = {
-  onDownloadVectorArt?: () => void;
+  onDownload?: () => void;
   onRestart?: () => void;
 };
 
@@ -61,8 +61,8 @@ export function setupHud(uiRoot: HTMLElement, options: SetupHudOptions = {}): vo
           type="button"
           class="hud-control-button hud-control-download disabled"
           data-hud-download
-          aria-label="Download SVG artwork"
-          title="Download SVG artwork"
+          aria-label="Download artwork"
+          title="Download artwork"
         >
           <span class="hud-control-icon" aria-hidden="true">
             <svg class="hud-control-icon-svg" viewBox="0 0 24 24" focusable="false" aria-hidden="true">
@@ -88,7 +88,7 @@ export function setupHud(uiRoot: HTMLElement, options: SetupHudOptions = {}): vo
 
   if (downloadButtonEl) {
     downloadButtonEl.addEventListener('click', () => {
-      options.onDownloadVectorArt?.();
+      options.onDownload?.();
     });
   }
   if (restartButtonEl) {
@@ -242,5 +242,5 @@ function colorToHex(color: CellColorId): string {
   if (color === 3) {
     return '#fdde06';
   }
-  return '#f0f0f0';
+  return '#ffffff';
 }
