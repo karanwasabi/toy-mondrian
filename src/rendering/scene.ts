@@ -1,6 +1,5 @@
-import { Container, Sprite, Texture } from 'pixi.js';
+import { Container, Sprite } from 'pixi.js';
 import { GRID_HEIGHT, GRID_WIDTH } from '../engine/constants';
-import { createMondrianFilter } from './mondrian-filter';
 import { GridTextureBridge } from './grid-texture';
 import type { Application } from 'pixi.js';
 import type { GameState } from '../engine/types';
@@ -22,10 +21,7 @@ export class MondrianScene {
     this.app = app;
     this.gridTextureBridge = new GridTextureBridge();
     this.boardContainer = new Container({ label: 'board-container' });
-    this.boardSprite = new Sprite(Texture.WHITE);
-
-    const filter = createMondrianFilter(this.gridTextureBridge.texture.source);
-    this.boardSprite.filters = [filter];
+    this.boardSprite = new Sprite(this.gridTextureBridge.texture);
     this.boardSprite.width = LOGICAL_BOARD_WIDTH;
     this.boardSprite.height = LOGICAL_BOARD_HEIGHT;
 
@@ -48,7 +44,6 @@ export class MondrianScene {
     const { width: viewportWidth, height: viewportHeight } = this.app.screen;
     const constrainedWidth = Math.min(viewportWidth, viewportHeight * BOARD_ASPECT_RATIO);
     const scale = constrainedWidth / LOGICAL_BOARD_WIDTH;
-
     this.boardContainer.scale.set(scale);
     this.boardContainer.position.set(
       (viewportWidth - LOGICAL_BOARD_WIDTH * scale) * 0.5,
