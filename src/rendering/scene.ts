@@ -1,11 +1,7 @@
 import { Container, Sprite } from 'pixi.js';
-import { GRID_HEIGHT, GRID_WIDTH } from '../engine/constants';
 import { GridTextureBridge } from './grid-texture';
 import type { Application } from 'pixi.js';
 import type { GameState } from '../engine/types';
-
-const LOGICAL_BOARD_WIDTH = 100;
-const LOGICAL_BOARD_HEIGHT = LOGICAL_BOARD_WIDTH * (GRID_HEIGHT / GRID_WIDTH);
 
 export class MondrianScene {
   private readonly app: Application;
@@ -21,8 +17,7 @@ export class MondrianScene {
     this.gridTextureBridge = new GridTextureBridge();
     this.boardContainer = new Container({ label: 'board-container' });
     this.boardSprite = new Sprite(this.gridTextureBridge.texture);
-    this.boardSprite.width = LOGICAL_BOARD_WIDTH;
-    this.boardSprite.height = LOGICAL_BOARD_HEIGHT;
+    this.boardSprite.roundPixels = true;
 
     this.boardContainer.addChild(this.boardSprite);
     this.app.stage.addChild(this.boardContainer);
@@ -41,9 +36,9 @@ export class MondrianScene {
 
   private resize = (): void => {
     const { width: viewportWidth, height: viewportHeight } = this.app.screen;
-    const scaleX = viewportWidth / LOGICAL_BOARD_WIDTH;
-    const scaleY = viewportHeight / LOGICAL_BOARD_HEIGHT;
-    this.boardContainer.scale.set(scaleX, scaleY);
+    this.boardSprite.width = Math.round(viewportWidth);
+    this.boardSprite.height = Math.round(viewportHeight);
+    this.boardContainer.scale.set(1, 1);
     this.boardContainer.position.set(0, 0);
   };
 }

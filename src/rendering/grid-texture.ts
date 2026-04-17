@@ -16,7 +16,7 @@ const PALETTE_RGBA: Readonly<Record<number, Rgba>> = {
 const BOARD_BG_RGBA: Rgba = [240, 240, 240, 255];
 const BORDER_RGBA: Rgba = [17, 17, 17, 255];
 const CELL_PIXELS = 12;
-const BORDER_PIXELS = 1;
+const BORDER_PIXELS = 2;
 const TEXTURE_WIDTH = GRID_WIDTH * CELL_PIXELS;
 const TEXTURE_HEIGHT = GRID_HEIGHT * CELL_PIXELS;
 
