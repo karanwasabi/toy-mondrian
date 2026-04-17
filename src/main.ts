@@ -15,6 +15,8 @@ async function bootstrap(): Promise<void> {
     throw new Error('Missing #app root element');
   }
 
+  const appShell = document.createElement('div');
+  appShell.className = 'app-shell';
   const gameLayout = document.createElement('div');
   gameLayout.className = 'game-layout';
   const canvasContainer = document.createElement('div');
@@ -22,7 +24,18 @@ async function bootstrap(): Promise<void> {
   const sidebarContainer = document.createElement('div');
   sidebarContainer.className = 'sidebar';
   gameLayout.append(canvasContainer, sidebarContainer);
-  appHost.appendChild(gameLayout);
+
+  const byline = document.createElement('p');
+  byline.className = 'app-byline';
+  byline.innerHTML = `
+    Crafted with <span class="app-byline-heart" aria-hidden="true">♥️</span> by
+    <a href="https://amrit.art" target="_blank" rel="noopener noreferrer">Amrit</a>
+    <span aria-hidden="true">&</span>
+    <a href="https://karanwasabi.com" target="_blank" rel="noopener noreferrer">Karan</a>
+  `;
+
+  appShell.appendChild(gameLayout);
+  appHost.append(appShell, byline);
 
   const app = await createPixiApp(canvasContainer);
   canvasContainer.appendChild(app.canvas);
