@@ -4,9 +4,8 @@ import { GridTextureBridge } from './grid-texture';
 import type { Application } from 'pixi.js';
 import type { GameState } from '../engine/types';
 
-const BOARD_ASPECT_RATIO = GRID_WIDTH / GRID_HEIGHT;
 const LOGICAL_BOARD_WIDTH = 100;
-const LOGICAL_BOARD_HEIGHT = LOGICAL_BOARD_WIDTH / BOARD_ASPECT_RATIO;
+const LOGICAL_BOARD_HEIGHT = LOGICAL_BOARD_WIDTH * (GRID_HEIGHT / GRID_WIDTH);
 
 export class MondrianScene {
   private readonly app: Application;
@@ -42,12 +41,9 @@ export class MondrianScene {
 
   private resize = (): void => {
     const { width: viewportWidth, height: viewportHeight } = this.app.screen;
-    const constrainedWidth = Math.min(viewportWidth, viewportHeight * BOARD_ASPECT_RATIO);
-    const scale = constrainedWidth / LOGICAL_BOARD_WIDTH;
-    this.boardContainer.scale.set(scale);
-    this.boardContainer.position.set(
-      (viewportWidth - LOGICAL_BOARD_WIDTH * scale) * 0.5,
-      (viewportHeight - LOGICAL_BOARD_HEIGHT * scale) * 0.5
-    );
+    const scaleX = viewportWidth / LOGICAL_BOARD_WIDTH;
+    const scaleY = viewportHeight / LOGICAL_BOARD_HEIGHT;
+    this.boardContainer.scale.set(scaleX, scaleY);
+    this.boardContainer.position.set(0, 0);
   };
 }
