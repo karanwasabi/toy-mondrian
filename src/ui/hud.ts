@@ -17,7 +17,7 @@ export function setupHud(uiRoot: HTMLElement, options: SetupHudOptions = {}): vo
   hud.className = 'hud';
   hud.innerHTML = `
     <div class="hud-panel hud-panel-score">
-      <span class="hud-label">SCORE</span>
+      <span class="hud-label">BLOCKS</span>
       <span class="hud-value" data-hud-score>0</span>
     </div>
     <div class="hud-panel hud-panel-time">
@@ -86,7 +86,7 @@ export function setupHud(uiRoot: HTMLElement, options: SetupHudOptions = {}): vo
 
 export function updateHud(state: GameState): void {
   if (scoreValueEl) {
-    scoreValueEl.textContent = String(state.score);
+    scoreValueEl.textContent = String(Math.floor(state.blocksUsed / 4));
   }
   if (timeValueEl) {
     timeValueEl.textContent = String(state.secondsElapsed);

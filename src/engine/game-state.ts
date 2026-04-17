@@ -40,6 +40,7 @@ export function createInitialGameState(seed: number): GameState {
       })),
     },
     score: 0,
+    blocksUsed: 0,
     elapsedMs: 0,
     secondsElapsed: 0,
     gravityMs: INITIAL_GRAVITY_MS,

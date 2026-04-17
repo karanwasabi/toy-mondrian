@@ -235,6 +235,7 @@ function resolveLockPending(state: GameState): GameState {
   const { newGrid, linesCleared } = processLineClears(stampedGrid);
   const scoreGain = calculateLineClearScore(linesCleared);
   const nextScore = state.score + scoreGain;
+  const nextBlocksUsed = state.blocksUsed + state.activePiece.cells.length;
 
   const { pieceKind, colorId, bagState, rngState } = getNextPiece(state.rngState, state.pieceBag);
   const nextActivePiece = createSpawnedPiece(pieceKind, colorId, state.boardSize.width);
@@ -251,6 +252,7 @@ function resolveLockPending(state: GameState): GameState {
     ...state,
     cells: newGrid,
     score: nextScore,
+    blocksUsed: nextBlocksUsed,
     pieceBag: bagState,
     rngState,
     activePiece: nextActivePiece,
