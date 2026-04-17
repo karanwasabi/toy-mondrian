@@ -73,9 +73,12 @@ export class GridTextureBridge {
         if (color === CellColorId.Empty) {
           continue;
         }
-        this.drawCell(x, y, color, cells, boardWidth, boardHeight);
+        this.fillCell(x, y, color);
       }
     }
+
+    this.drawBorders(cells, boardWidth, boardHeight);
+    this.drawCornerJoins(cells, boardWidth, boardHeight);
 
     this.source.update();
   }
@@ -90,51 +93,96 @@ export class GridTextureBridge {
     }
   }
 
-  private drawCell(
-    gridX: number,
-    gridY: number,
-    colorId: number,
-    cells: CellState[],
-    boardWidth: number,
-    boardHeight: number
-  ): void {
+  private fillCell(gridX: number, gridY: number, colorId: number): void {
     const [fillR, fillG, fillB, fillA] = PALETTE_RGBA[colorId] ?? PALETTE_RGBA[CellColorId.Empty];
-    const [borderR, borderG, borderB, borderA] = BORDER_RGBA;
-
     const cellStartX = gridX * CELL_PIXELS;
     const cellStartY = gridY * CELL_PIXELS;
-    const localMax = CELL_PIXELS - 1;
 
-    const hasNorthBorder = this.neighborColor(cells, boardWidth, boardHeight, gridX, gridY - 1) !== colorId;
-    const hasSouthBorder = this.neighborColor(cells, boardWidth, boardHeight, gridX, gridY + 1) !== colorId;
-    const hasWestBorder = this.neighborColor(cells, boardWidth, boardHeight, gridX - 1, gridY) !== colorId;
-    const hasEastBorder = this.neighborColor(cells, boardWidth, boardHeight, gridX + 1, gridY) !== colorId;
+    this.fillRect(cellStartX, cellStartY, CELL_PIXELS, CELL_PIXELS, fillR, fillG, fillB, fillA);
+  }
 
-    for (let py = 0; py < CELL_PIXELS; py += 1) {
-      for (let px = 0; px < CELL_PIXELS; px += 1) {
-        const onNorth = hasNorthBorder && py < BORDER_PIXELS;
-        const onSouth = hasSouthBorder && py > localMax - BORDER_PIXELS;
-        const onWest = hasWestBorder && px < BORDER_PIXELS;
-        const onEast = hasEastBorder && px > localMax - BORDER_PIXELS;
-        const isBorder = onNorth || onSouth || onWest || onEast;
+  private drawBorders(cells: CellState[], boardWidth: number, boardHeight: number): void {
+    const [borderR, borderG, borderB, borderA] = BORDER_RGBA;
 
-        this.writePixel(
-          cellStartX + px,
-          cellStartY + py,
-          isBorder ? borderR : fillR,
-          isBorder ? borderG : fillG,
-          isBorder ? borderB : fillB,
-          isBorder ? borderA : fillA
+    // Vertical seams (between x-1 and x).
+    for (let y = 0; y < boardHeight; y += 1) {
+      for (let x = 0; x <= boardWidth; x += 1) {
+        const left = this.getCellColor(cells, boardWidth, boardHeight, x - 1, y);
+        const right = this.getCellColor(cells, boardWidth, boardHeight, x, y);
+        if (!this.hasBoundary(left, right)) {
+          continue;
+        }
+
+        const seamX = this.seamCoordX(x, boardWidth);
+        this.fillRect(seamX, y * CELL_PIXELS, BORDER_PIXELS, CELL_PIXELS, borderR, borderG, borderB, borderA);
+      }
+    }
+
+    // Horizontal seams (between y-1 and y).
+    for (let y = 0; y <= boardHeight; y += 1) {
+      for (let x = 0; x < boardWidth; x += 1) {
+        const top = this.getCellColor(cells, boardWidth, boardHeight, x, y - 1);
+        const bottom = this.getCellColor(cells, boardWidth, boardHeight, x, y);
+        if (!this.hasBoundary(top, bottom)) {
+          continue;
+        }
+
+        const seamY = this.seamCoordY(y, boardHeight);
+        this.fillRect(x * CELL_PIXELS, seamY, CELL_PIXELS, BORDER_PIXELS, borderR, borderG, borderB, borderA);
+      }
+    }
+  }
+
+  private drawCornerJoins(cells: CellState[], boardWidth: number, boardHeight: number): void {
+    const [borderR, borderG, borderB, borderA] = BORDER_RGBA;
+
+    for (let y = 0; y <= boardHeight; y += 1) {
+      for (let x = 0; x <= boardWidth; x += 1) {
+        const nw = this.getCellColor(cells, boardWidth, boardHeight, x - 1, y - 1);
+        const ne = this.getCellColor(cells, boardWidth, boardHeight, x, y - 1);
+        const sw = this.getCellColor(cells, boardWidth, boardHeight, x - 1, y);
+        const se = this.getCellColor(cells, boardWidth, boardHeight, x, y);
+
+        const topVerticalBoundary = this.hasBoundary(nw, ne);
+        const bottomVerticalBoundary = this.hasBoundary(sw, se);
+        const leftHorizontalBoundary = this.hasBoundary(nw, sw);
+        const rightHorizontalBoundary = this.hasBoundary(ne, se);
+
+        if (!(topVerticalBoundary || bottomVerticalBoundary) || !(leftHorizontalBoundary || rightHorizontalBoundary)) {
+          continue;
+        }
+
+        this.fillRect(
+          this.seamCoordX(x, boardWidth),
+          this.seamCoordY(y, boardHeight),
+          BORDER_PIXELS,
+          BORDER_PIXELS,
+          borderR,
+          borderG,
+          borderB,
+          borderA
         );
       }
     }
   }
 
-  private neighborColor(cells: CellState[], boardWidth: number, boardHeight: number, x: number, y: number): number {
+  private getCellColor(cells: CellState[], boardWidth: number, boardHeight: number, x: number, y: number): number {
     if (x < 0 || x >= boardWidth || y < 0 || y >= boardHeight) {
       return CellColorId.Empty;
     }
     return cells[y * boardWidth + x].color;
+  }
+
+  private hasBoundary(a: number, b: number): boolean {
+    return a !== b && !(a === CellColorId.Empty && b === CellColorId.Empty);
+  }
+
+  private seamCoordX(x: number, boardWidth: number): number {
+    return x === boardWidth ? TEXTURE_WIDTH - BORDER_PIXELS : x * CELL_PIXELS;
+  }
+
+  private seamCoordY(y: number, boardHeight: number): number {
+    return y === boardHeight ? TEXTURE_HEIGHT - BORDER_PIXELS : y * CELL_PIXELS;
   }
 
   private writePixel(x: number, y: number, r: number, g: number, b: number, a: number): void {
@@ -143,6 +191,23 @@ export class GridTextureBridge {
     this.buffer[offset + 1] = g;
     this.buffer[offset + 2] = b;
     this.buffer[offset + 3] = a;
+  }
+
+  private fillRect(
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    r: number,
+    g: number,
+    b: number,
+    a: number
+  ): void {
+    for (let py = 0; py < height; py += 1) {
+      for (let px = 0; px < width; px += 1) {
+        this.writePixel(x + px, y + py, r, g, b, a);
+      }
+    }
   }
 }
 
