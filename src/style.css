@@ -328,8 +328,18 @@ body {
 
 @media (max-width: 640px) {
   #app {
-    --app-pad-y: 4px;
-    padding: var(--app-pad-y) 4px;
+    --app-pad-y: 0px;
+    --mobile-ui-reserved-height: 224px;
+    padding: 0;
+    justify-content: space-between;
+  }
+
+  .app-shell {
+    flex: 0 1 auto;
+    width: 100%;
+    justify-content: flex-start;
+    align-items: stretch;
+    padding-top: 0;
   }
 
   .game-layout {
@@ -337,18 +347,89 @@ body {
     --download-padding-y: 8px;
     --download-padding-x: 8px;
     --download-font-size: 11px;
+    width: 100%;
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      'score time'
+      'canvas canvas'
+      'controls controls';
+    row-gap: 6px;
+    column-gap: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
     box-shadow: none;
+    align-content: start;
+    margin-top: 0;
+  }
+
+  .canvas-container {
+    grid-area: canvas;
+    width: min(100%, calc((100dvh - var(--mobile-ui-reserved-height)) * 0.5));
+    border: 3px solid #111111;
+    box-sizing: border-box;
+    justify-self: center;
+  }
+
+  .sidebar,
+  .ui-layer,
+  .hud {
+    display: contents;
+  }
+
+  .hud-panel-score {
+    grid-area: score;
+    min-height: 70px;
+    border: 3px solid #111111;
+    border-right-width: 1.5px;
+  }
+
+  .hud-panel-time {
+    grid-area: time;
+    min-height: 70px;
+    border: 3px solid #111111;
+    border-left-width: 1.5px;
+  }
+
+  .hud-panel-controls {
+    grid-area: controls;
+    min-height: 118px;
+    border-width: 3px;
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .hud-led-screen {
+    min-height: 74px;
+    padding: 8px;
+    align-self: center;
+  }
+
+  .hud-controls {
+    padding: 0;
+    display: grid;
+    align-content: stretch;
+    gap: 6px;
   }
 
   .hud-control-button {
-    height: 40px;
+    width: 100%;
+    height: auto;
+    min-height: 36px;
+  }
+
+  .app-byline {
+    display: flex;
+    padding: 2px 0 4px;
+    font-size: 12px;
   }
 }
 
 @media (max-width: 460px) {
   #app {
-    --app-pad-y: 0px;
-    padding: 0;
+    --mobile-ui-reserved-height: 216px;
   }
 
   .game-layout {
@@ -356,16 +437,18 @@ body {
     --download-padding-y: 6px;
     --download-padding-x: 6px;
     --download-font-size: 10px;
-    border-left-width: 0;
-    border-right-width: 0;
-    box-shadow: none;
   }
 
   .hud-controls {
     gap: 6px;
   }
 
+  .hud-panel-score,
+  .hud-panel-time {
+    min-height: 62px;
+  }
+
   .hud-control-button {
-    height: 34px;
+    min-height: 34px;
   }
 }
