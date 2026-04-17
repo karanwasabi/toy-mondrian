@@ -182,6 +182,32 @@ body {
   z-index: 1;
 }
 
+.hud-next-piece {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding-top: 8px;
+  position: relative;
+  z-index: 1;
+}
+
+.hud-next-piece-label {
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.hud-next-piece-preview {
+  display: block;
+  width: 50px;
+  height: 50px;
+  image-rendering: pixelated;
+}
+
 .hud-controls {
   padding: 8px 0 2px;
   display: grid;
@@ -271,17 +297,19 @@ body {
 }
 
 .hud-led-screen.state-running .hud-led-text {
-  animation: ledPulse 0.95s steps(2, end) infinite;
+  display: none;
 }
 
-@keyframes ledPulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.48;
-  }
+.hud-led-screen.state-running .hud-next-piece {
+  display: flex;
+}
+
+.hud-led-screen.state-finished .hud-led-text {
+  display: block;
+}
+
+.hud-led-screen.state-finished .hud-next-piece {
+  display: none;
 }
 
 .hidden {
