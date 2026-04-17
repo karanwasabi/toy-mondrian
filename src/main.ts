@@ -9,6 +9,13 @@ import { setupTouch } from './ui/touch-controller';
 import { exportVectorArt } from './ui/gallery-export';
 import { setupHud, updateHud } from './ui/hud';
 
+function randomSeed(): number {
+  if (typeof crypto !== 'undefined' && typeof crypto.getRandomValues === 'function') {
+    return crypto.getRandomValues(new Uint32Array(1))[0];
+  }
+  return Date.now() >>> 0;
+}
+
 async function bootstrap(): Promise<void> {
   const appHost = document.querySelector<HTMLDivElement>('#app');
   if (!appHost) {
@@ -40,7 +47,7 @@ async function bootstrap(): Promise<void> {
   const app = await createPixiApp(canvasContainer);
   canvasContainer.appendChild(app.canvas);
   const scene = new MondrianScene(app);
-  const runtime = new EngineRuntime({ seed: 1 });
+  const runtime = new EngineRuntime({ seed: randomSeed() });
 
   let latestState: GameState | null = null;
   const uiRoot = createUIRoot();
@@ -67,7 +74,7 @@ async function bootstrap(): Promise<void> {
       URL.revokeObjectURL(url);
     },
     onRestart: () => {
-      runtime.restart(Date.now());
+      runtime.restart(randomSeed());
     },
   });
 
