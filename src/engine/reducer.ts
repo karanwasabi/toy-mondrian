@@ -238,12 +238,14 @@ function resolveLockPending(state: GameState): GameState {
 
   const { pieceKind, colorId, bagState, rngState } = getNextPiece(state.rngState, state.pieceBag);
   const nextActivePiece = createSpawnedPiece(pieceKind, colorId, state.boardSize.width);
-  const isGameOver = !isValidPosition(
+  const isSpawnBlocked = !isValidPosition(
     { boardSize: state.boardSize, cells: newGrid },
     nextActivePiece,
     nextActivePiece.position.x,
     nextActivePiece.position.y
   );
+  const reachedTopRow = hasOccupiedTopRow(newGrid, state.boardSize.width);
+  const isGameOver = isSpawnBlocked || reachedTopRow;
 
   return {
     ...state,
@@ -268,6 +270,15 @@ function stampActivePieceIntoGrid(grid: Uint8Array, piece: ActivePiece, boardWid
   }
 
   return nextGrid;
+}
+
+function hasOccupiedTopRow(grid: Uint8Array, boardWidth: number): boolean {
+  for (let x = 0; x < boardWidth; x += 1) {
+    if (grid[x] !== 0) {
+      return true;
+    }
+  }
+  return false;
 }
 
 function calculateLineClearScore(linesCleared: number): number {
