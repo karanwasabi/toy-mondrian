@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Toy Modrian favicon">
+  <rect width="64" height="64" fill="#f0f0f0" />
+  <rect x="0" y="0" width="64" height="5" fill="#111111" />
+  <rect x="0" y="59" width="64" height="5" fill="#111111" />
+  <rect x="0" y="0" width="5" height="64" fill="#111111" />
+  <rect x="59" y="0" width="5" height="64" fill="#111111" />
+
+  <rect x="37" y="5" width="5" height="54" fill="#111111" />
+  <rect x="42" y="22" width="17" height="5" fill="#111111" />
+  <rect x="42" y="40" width="17" height="5" fill="#111111" />
+
+  <rect x="5" y="5" width="32" height="54" fill="#f0f0f0" />
+  <rect x="42" y="5" width="17" height="17" fill="#e70503" />
+  <rect x="42" y="27" width="17" height="13" fill="#0300ad" />
+  <rect x="42" y="45" width="17" height="14" fill="#fdde06" />
+</svg>
