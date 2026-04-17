@@ -13,19 +13,19 @@ export function setupHud(uiRoot: HTMLElement, options: SetupHudOptions = {}): vo
   const hud = document.createElement('div');
   hud.className = 'hud';
   hud.innerHTML = `
-    <div class="hud-item">
-      <span class="hud-label">Score</span>
+    <div class="hud-panel hud-panel-score">
+      <span class="hud-label">SCORE</span>
       <span class="hud-value" data-hud-score>0</span>
     </div>
-    <div class="hud-item">
-      <span class="hud-label">Time</span>
+    <div class="hud-panel hud-panel-time">
+      <span class="hud-label">TIME</span>
       <span class="hud-value" data-hud-time>0</span>
     </div>
-    <div class="hud-item">
-      <span class="hud-label">Status</span>
+    <div class="hud-panel hud-panel-controls">
+      <span class="hud-label">STATUS</span>
       <span class="hud-value hud-status" data-hud-status>RUNNING</span>
+      <button type="button" class="hud-download hidden" data-hud-download>Download Vector Art (SVG)</button>
     </div>
-    <button type="button" class="hud-download hidden" data-hud-download>Download Vector Art (SVG)</button>
   `;
 
   uiRoot.appendChild(hud);

@@ -15,12 +15,21 @@ async function bootstrap(): Promise<void> {
     throw new Error('Missing #app root element');
   }
 
-  const app = await createPixiApp(appHost);
-  appHost.appendChild(app.canvas);
+  const gameLayout = document.createElement('div');
+  gameLayout.className = 'game-layout';
+  const canvasContainer = document.createElement('div');
+  canvasContainer.className = 'canvas-container';
+  const sidebarContainer = document.createElement('div');
+  sidebarContainer.className = 'sidebar';
+  gameLayout.append(canvasContainer, sidebarContainer);
+  appHost.appendChild(gameLayout);
+
+  const app = await createPixiApp(canvasContainer);
+  canvasContainer.appendChild(app.canvas);
 
   let latestState: GameState | null = null;
   const uiRoot = createUIRoot();
-  appHost.appendChild(uiRoot);
+  sidebarContainer.appendChild(uiRoot);
   setupHud(uiRoot, {
     onDownloadVectorArt: async () => {
       if (!latestState || latestState.phase !== GamePhase.GalleryClosed) {
