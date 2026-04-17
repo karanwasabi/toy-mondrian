@@ -15,7 +15,7 @@ async function bootstrap(): Promise<void> {
     throw new Error('Missing #app root element');
   }
 
-  const app = await createPixiApp();
+  const app = await createPixiApp(appHost);
   appHost.appendChild(app.canvas);
 
   let latestState: GameState | null = null;

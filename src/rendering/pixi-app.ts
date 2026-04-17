@@ -2,11 +2,11 @@ import { Application } from 'pixi.js';
 
 const BACKGROUND_COLOR = 0xf0f0f0;
 
-export async function createPixiApp(): Promise<Application> {
+export async function createPixiApp(hostElement: HTMLElement): Promise<Application> {
   const app = new Application();
   await app.init({
     background: BACKGROUND_COLOR,
-    resizeTo: window,
+    resizeTo: hostElement,
     antialias: true,
     preference: 'webgl',
   });
