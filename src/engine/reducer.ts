@@ -1,4 +1,4 @@
-import { isValidPosition, willCollideAtOffset } from './collision';
+import { findLenientSpawnY, isValidPosition, willCollideAtOffset } from './collision';
 import {
   GRAVITY_ACCELERATION_PER_SECOND_MS,
   INITIAL_GRAVITY_MS,
@@ -260,6 +260,16 @@ function resolveLockPending(state: GameState): GameState {
   );
 
   if (isSpawnBlocked) {
+    const spawnX = nextActivePiece.position.x;
+    const lenientY = findLenientSpawnY({ boardSize: state.boardSize, cells: newGrid }, nextActivePiece, spawnX);
+    const placedPiece: ActivePiece =
+      lenientY !== null
+        ? {
+            ...nextActivePiece,
+            position: { x: spawnX, y: lenientY },
+          }
+        : nextActivePiece;
+
     return {
       ...state,
       cells: newGrid,
@@ -267,7 +277,7 @@ function resolveLockPending(state: GameState): GameState {
       blocksUsed: nextBlocksUsed,
       pieceBag: bagState,
       rngState,
-      activePiece: null,
+      activePiece: placedPiece,
       lockPending: false,
       phase: GamePhase.GalleryClosed,
     };
