@@ -115,7 +115,8 @@ const resvg = new Resvg(svg, {
   },
 });
 const pngBuffer = resvg.render().asPng();
+const compressed = await sharp(pngBuffer).png({ compressionLevel: 9, adaptiveFiltering: true, effort: 10 }).toBuffer();
 
 const outPath = path.join(root, 'public/og.png');
-fs.writeFileSync(outPath, pngBuffer);
-console.log('Wrote', outPath);
+fs.writeFileSync(outPath, compressed);
+console.log('Wrote', outPath, `(${compressed.length} bytes)`);

@@ -1,0 +1,13 @@
+# Open Graph / link-preview crawlers (Facebook, WhatsApp, Instagram, etc.)
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Facebot
+Allow: /
+
+User-agent: MetaInspector
+Allow: /
+
+# Everything else
+User-agent: *
+Allow: /
