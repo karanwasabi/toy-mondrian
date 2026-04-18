@@ -28,29 +28,55 @@ export function createDownloadModal(host: HTMLElement, options: DownloadModalOpt
       <button type="button" class="download-modal-close" data-download-modal-close aria-label="Close">×</button>
     </div>
     <div class="download-modal-body">
-      <button type="button" class="download-modal-option" data-download-image>
-        <span class="download-modal-option-icon" aria-hidden="true">
-          <svg class="download-modal-svg" viewBox="0 0 24 24" focusable="false" aria-hidden="true">
-            <rect x="3.5" y="5.5" width="17" height="13" rx="1" />
-            <circle cx="9" cy="10" r="2" />
-            <path d="M4 17.5l4.5-4.5 3.5 3.5 3.5-3.5L20 17.5" />
+      <button type="button" class="download-modal-option download-modal-option--picture" data-download-image>
+        <span class="download-modal-thumb" aria-hidden="true">
+          <svg
+            class="download-modal-thumb-svg"
+            viewBox="0 0 56 48"
+            focusable="false"
+            aria-hidden="true"
+            preserveAspectRatio="xMidYMid meet"
+          >
+            <rect x="5" y="9" width="46" height="30" rx="0" fill="#e4edf5" stroke="#111111" stroke-width="1.75" />
+            <path d="M 12 33 L 21 22 L 29 30 L 39 16 L 44 33 Z" fill="#6f92b0" />
+            <circle cx="37" cy="17" r="3.75" fill="#fdde06" />
           </svg>
         </span>
         <span class="download-modal-option-text">
-          <span class="download-modal-option-label">Download Image</span>
-          <span class="download-modal-option-hint">High-quality JPEG (4K)</span>
+          <span class="download-modal-option-label">Picture</span>
+          <span class="download-modal-option-hint">JPEG · a gorgeous 4K image of your finished artboard</span>
         </span>
       </button>
-      <button type="button" class="download-modal-option" data-download-vector>
-        <span class="download-modal-option-icon" aria-hidden="true">
-          <svg class="download-modal-svg" viewBox="0 0 24 24" focusable="false" aria-hidden="true">
-            <path d="M4 17V7l3 3 4-4 4 4 5-5v12H4z" />
-            <path d="M7 12h3M14 10h3M10 15h5" />
+      <button type="button" class="download-modal-option download-modal-option--vector" data-download-vector>
+        <span class="download-modal-thumb" aria-hidden="true">
+          <svg
+            class="download-modal-thumb-svg"
+            viewBox="0 0 56 48"
+            focusable="false"
+            aria-hidden="true"
+            preserveAspectRatio="xMidYMid meet"
+          >
+            <path
+              d="M 10 7 h29.5 L 46 13.5 V41 H10 Z"
+              fill="#f4f6fb"
+              stroke="#111111"
+              stroke-width="1.75"
+              stroke-linejoin="miter"
+            />
+            <path d="M 39.5 7 V13.5 H46" fill="none" stroke="#111111" stroke-width="1.75" stroke-linejoin="miter" />
+            <path
+              d="M 17 31 L 28 18 L 39 31"
+              fill="none"
+              stroke="#0300ad"
+              stroke-width="2.25"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
           </svg>
         </span>
         <span class="download-modal-option-text">
-          <span class="download-modal-option-label">Download Vector</span>
-          <span class="download-modal-option-hint">SVG for scaling and print</span>
+          <span class="download-modal-option-label">Vector</span>
+          <span class="download-modal-option-hint">SVG · for apps, print, or anyone who wants the extra-sharp copy</span>
         </span>
       </button>
     </div>
