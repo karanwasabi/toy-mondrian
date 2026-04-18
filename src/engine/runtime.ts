@@ -23,6 +23,10 @@ export class EngineRuntime {
 
   private lastFrameTime = 0;
 
+  private readonly onDocumentVisibilityChange = (): void => {
+    this.lastFrameTime = 0;
+  };
+
   constructor(options: RuntimeOptions) {
     this.seed = options.seed;
     this.state = createInitialGameState(options.seed);
@@ -34,6 +38,9 @@ export class EngineRuntime {
     }
 
     this.lastFrameTime = 0;
+    if (typeof document !== 'undefined') {
+      document.addEventListener('visibilitychange', this.onDocumentVisibilityChange);
+    }
     this.rafId = requestAnimationFrame(this.onFrame);
     this.emitSnapshot();
   }
@@ -44,6 +51,9 @@ export class EngineRuntime {
     }
     cancelAnimationFrame(this.rafId);
     this.rafId = null;
+    if (typeof document !== 'undefined') {
+      document.removeEventListener('visibilitychange', this.onDocumentVisibilityChange);
+    }
   }
 
   enqueueCommand(command: InputCommand, source: CommandSource = 'keyboard'): void {
@@ -78,8 +88,10 @@ export class EngineRuntime {
   }
 
   private onFrame = (time: number): void => {
-    const deltaMs = this.lastFrameTime === 0 ? 0 : time - this.lastFrameTime;
+    const rawDeltaMs = this.lastFrameTime === 0 ? 0 : time - this.lastFrameTime;
     this.lastFrameTime = time;
+    const tabFocused = typeof document === 'undefined' || document.visibilityState === 'visible';
+    const deltaMs = tabFocused ? rawDeltaMs : 0;
 
     let nextState = this.state;
     if (this.queuedCommands.length > 0) {
