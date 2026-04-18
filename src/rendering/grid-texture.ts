@@ -5,8 +5,10 @@ import { composeBoardRgbaInto } from './compose-board-rgba';
 
 const CELL_PIXELS = 12;
 const BORDER_PIXELS = 2;
-const TEXTURE_WIDTH = GRID_WIDTH * CELL_PIXELS;
-const TEXTURE_HEIGHT = GRID_HEIGHT * CELL_PIXELS;
+
+/** Native RGBA atlas size (`compose-board-rgba` layout). */
+export const BOARD_TEXTURE_WIDTH = GRID_WIDTH * CELL_PIXELS;
+export const BOARD_TEXTURE_HEIGHT = GRID_HEIGHT * CELL_PIXELS;
 
 export class GridTextureBridge {
   private readonly buffer: Uint8Array;
@@ -16,11 +18,11 @@ export class GridTextureBridge {
   readonly texture: Texture<BufferImageSource>;
 
   constructor() {
-    this.buffer = new Uint8Array(TEXTURE_WIDTH * TEXTURE_HEIGHT * 4);
+    this.buffer = new Uint8Array(BOARD_TEXTURE_WIDTH * BOARD_TEXTURE_HEIGHT * 4);
     this.source = new BufferImageSource({
       resource: this.buffer,
-      width: TEXTURE_WIDTH,
-      height: TEXTURE_HEIGHT,
+      width: BOARD_TEXTURE_WIDTH,
+      height: BOARD_TEXTURE_HEIGHT,
       alphaMode: 'premultiplied-alpha',
     });
     this.source.minFilter = 'nearest';
@@ -33,7 +35,7 @@ export class GridTextureBridge {
   }
 
   composeWithActivePiece(state: GameState): void {
-    composeBoardRgbaInto(state, CELL_PIXELS, BORDER_PIXELS, this.buffer, TEXTURE_WIDTH, TEXTURE_HEIGHT);
+    composeBoardRgbaInto(state, CELL_PIXELS, BORDER_PIXELS, this.buffer, BOARD_TEXTURE_WIDTH, BOARD_TEXTURE_HEIGHT);
     this.source.update();
   }
 }
