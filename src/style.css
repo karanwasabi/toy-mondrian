@@ -21,6 +21,8 @@ body {
 }
 
 #app {
+  --focus-ring-outer: #111111;
+  --focus-ring-inner: #fdde06;
   --app-pad-y: 24px;
   --layout-max-width: 520px;
   display: flex;
@@ -248,6 +250,19 @@ body {
   transform: translate(1px, 1px);
 }
 
+.hud-control-button:focus {
+  outline: none;
+}
+
+.hud-control-button:focus-visible:not(:disabled) {
+  outline: none;
+  box-shadow:
+    0 0 0 2px var(--focus-ring-inner),
+    0 0 0 5px var(--focus-ring-outer);
+  position: relative;
+  z-index: 1;
+}
+
 .hud-control-restart {
   background: #e70503;
   color: #ffffff;
@@ -345,10 +360,24 @@ body {
   line-height: 1;
 }
 
-.app-byline a {
+.app-byline-link {
   color: #ffffff;
   font-weight: 600;
   text-decoration: underline;
+}
+
+.app-byline-link:focus {
+  outline: none;
+}
+
+.app-byline-link--amrit:hover,
+.app-byline-link--amrit:focus-visible {
+  color: #e70503;
+}
+
+.app-byline-link--karan:hover,
+.app-byline-link--karan:focus-visible {
+  color: #05ad03;
 }
 
 @media (max-width: 900px), (max-height: 820px) {
@@ -562,6 +591,19 @@ body {
   filter: brightness(0.96);
 }
 
+.download-modal-close:focus {
+  outline: none;
+}
+
+.download-modal-close:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px var(--focus-ring-inner),
+    0 0 0 5px var(--focus-ring-outer);
+  position: relative;
+  z-index: 1;
+}
+
 .download-modal-body {
   display: flex;
   flex-direction: column;
@@ -589,6 +631,19 @@ body {
 
 .download-modal-option:active {
   transform: translate(1px, 1px);
+}
+
+.download-modal-option:focus {
+  outline: none;
+}
+
+.download-modal-option:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px var(--focus-ring-inner),
+    0 0 0 5px var(--focus-ring-outer);
+  position: relative;
+  z-index: 1;
 }
 
 .download-modal-option-icon {

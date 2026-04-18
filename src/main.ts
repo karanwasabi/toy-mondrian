@@ -38,9 +38,9 @@ async function bootstrap(): Promise<void> {
   byline.className = 'app-byline';
   byline.innerHTML = `
     Crafted with <span class="app-byline-heart" aria-hidden="true">♥️</span> by
-    <a href="https://amrit.art" target="_blank" rel="noopener noreferrer">Amrit</a>
+    <a class="app-byline-link app-byline-link--amrit" href="https://amrit.art" target="_blank" rel="noopener noreferrer">Amrit</a>
     <span aria-hidden="true">&</span>
-    <a href="https://karanwasabi.com" target="_blank" rel="noopener noreferrer">Karan</a>
+    <a class="app-byline-link app-byline-link--karan" href="https://karanwasabi.com" target="_blank" rel="noopener noreferrer">Karan</a>
   `;
 
   appShell.appendChild(gameLayout);
