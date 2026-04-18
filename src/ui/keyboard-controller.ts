@@ -21,8 +21,10 @@ export function setupKeyboard(dispatch: Dispatch, canDispatch: CanDispatch = () 
         command = { type: 'SoftDropStart' };
         break;
       case 'Space':
-        command = { type: 'HardDrop' };
-        break;
+        if (canDispatch()) {
+          event.preventDefault();
+        }
+        return;
       default:
         break;
     }

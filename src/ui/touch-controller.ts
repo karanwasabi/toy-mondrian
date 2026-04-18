@@ -6,8 +6,6 @@ type CanDispatch = () => boolean;
 const TAP_MAX_DURATION_MS = 180;
 const TAP_MAX_MOVE_PX = 12;
 const SWIPE_STEP_PX = 40;
-const HARD_DROP_MIN_DISTANCE_PX = 80;
-const HARD_DROP_MIN_VELOCITY = 1.0;
 
 type TouchState = {
   startX: number;
@@ -108,16 +106,12 @@ export function setupTouch(dispatch: Dispatch, canDispatch: CanDispatch = () => 
     const elapsedMs = Math.max(1, performance.now() - touchState.startTime);
     const totalDx = touch.clientX - touchState.startX;
     const totalDy = touch.clientY - touchState.startY;
-    const speedY = totalDy / elapsedMs;
     const distance = Math.hypot(totalDx, totalDy);
 
     const isTap = elapsedMs <= TAP_MAX_DURATION_MS && distance <= TAP_MAX_MOVE_PX;
-    const isFastDownSwipe = totalDy >= HARD_DROP_MIN_DISTANCE_PX && speedY >= HARD_DROP_MIN_VELOCITY;
 
     if (isTap) {
       dispatch({ type: 'RotateCW' });
-    } else if (isFastDownSwipe) {
-      dispatch({ type: 'HardDrop' });
     }
 
     activeTouchId = null;

@@ -56,8 +56,7 @@ export type InputCommand =
   | { type: 'RotateCW' }
   | { type: 'SoftDropStep' }
   | { type: 'SoftDropStart' }
-  | { type: 'SoftDropStop' }
-  | { type: 'HardDrop' };
+  | { type: 'SoftDropStop' };
 
 export type TickAction = {
   type: 'TickAction';

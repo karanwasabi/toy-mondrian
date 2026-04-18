@@ -49,8 +49,6 @@ export function reduce(state: GameState, action: QueuedCommand | TickAction): Ga
       };
     case 'SoftDropStep':
       return tryStepDrop(state);
-    case 'HardDrop':
-      return tryHardDrop(state);
     default:
       return state;
   }
@@ -187,30 +185,6 @@ function tryStepDrop(state: GameState): GameState {
         y: state.activePiece.position.y + 1,
       },
     },
-  };
-}
-
-function tryHardDrop(state: GameState): GameState {
-  if (!state.activePiece || state.lockPending) {
-    return state;
-  }
-
-  let finalY = state.activePiece.position.y;
-  while (!willCollideAtOffset(state, state.activePiece, 0, finalY + 1 - state.activePiece.position.y)) {
-    finalY += 1;
-  }
-
-  return {
-    ...state,
-    activePiece: {
-      ...state.activePiece,
-      position: {
-        x: state.activePiece.position.x,
-        y: finalY,
-      },
-    },
-    lockPending: true,
-    dropCounterMs: state.gravityMs,
   };
 }
 
