@@ -237,6 +237,19 @@ function resolveLockPending(state: GameState): GameState {
   const nextScore = state.score + scoreGain;
   const nextBlocksUsed = state.blocksUsed + state.activePiece.cells.length;
 
+  const reachedTopRow = hasOccupiedTopRow(newGrid, state.boardSize.width);
+  if (reachedTopRow) {
+    return {
+      ...state,
+      cells: newGrid,
+      score: nextScore,
+      blocksUsed: nextBlocksUsed,
+      activePiece: null,
+      lockPending: false,
+      phase: GamePhase.GalleryClosed,
+    };
+  }
+
   const { pieceKind, colorId, bagState, rngState } = getNextPiece(state.rngState, state.pieceBag);
   const nextActivePiece = createSpawnedPiece(pieceKind, colorId, state.boardSize.width);
   const isSpawnBlocked = !isValidPosition(
@@ -245,8 +258,20 @@ function resolveLockPending(state: GameState): GameState {
     nextActivePiece.position.x,
     nextActivePiece.position.y
   );
-  const reachedTopRow = hasOccupiedTopRow(newGrid, state.boardSize.width);
-  const isGameOver = isSpawnBlocked || reachedTopRow;
+
+  if (isSpawnBlocked) {
+    return {
+      ...state,
+      cells: newGrid,
+      score: nextScore,
+      blocksUsed: nextBlocksUsed,
+      pieceBag: bagState,
+      rngState,
+      activePiece: null,
+      lockPending: false,
+      phase: GamePhase.GalleryClosed,
+    };
+  }
 
   return {
     ...state,
@@ -257,7 +282,7 @@ function resolveLockPending(state: GameState): GameState {
     rngState,
     activePiece: nextActivePiece,
     lockPending: false,
-    phase: isGameOver ? GamePhase.GalleryClosed : state.phase,
+    phase: state.phase,
   };
 }
 
