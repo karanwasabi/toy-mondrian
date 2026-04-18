@@ -46,8 +46,8 @@ export function setupHud(uiRoot: HTMLElement, options: SetupHudOptions = {}): vo
           type="button"
           class="hud-control-button hud-control-restart"
           data-hud-restart
-          aria-label="Restart artwork"
-          title="Restart artwork"
+          aria-label="Restart Game"
+          title="Restart Game"
         >
           <span class="hud-control-icon" aria-hidden="true">
             <svg class="hud-control-icon-svg" viewBox="0 0 24 24" focusable="false" aria-hidden="true">
@@ -61,8 +61,8 @@ export function setupHud(uiRoot: HTMLElement, options: SetupHudOptions = {}): vo
           type="button"
           class="hud-control-button hud-control-download disabled"
           data-hud-download
-          aria-label="Download artwork"
-          title="Download artwork"
+          aria-label="Download Artwork"
+          title="Download Artwork"
         >
           <span class="hud-control-icon" aria-hidden="true">
             <svg class="hud-control-icon-svg" viewBox="0 0 24 24" focusable="false" aria-hidden="true">
