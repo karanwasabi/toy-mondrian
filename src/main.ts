@@ -10,6 +10,7 @@ import { exportBoardAs4kJpegBlob } from './ui/board-jpeg-export';
 import { createDownloadModal } from './ui/download-modal';
 import { exportVectorArtFromGameState } from './ui/gallery-export';
 import { setupHud, updateHud } from './ui/hud';
+import { applySfxForTransition, createSfxController } from './audio/sfx';
 
 function randomSeed(): number {
   if (typeof crypto !== 'undefined' && typeof crypto.getRandomValues === 'function') {
@@ -50,8 +51,11 @@ async function bootstrap(): Promise<void> {
   canvasContainer.appendChild(app.canvas);
   const scene = new MondrianScene(app);
   const runtime = new EngineRuntime({ seed: randomSeed() });
+  const sfx = createSfxController();
+  sfx.installUnlockHandlers();
 
   let latestState: GameState | null = null;
+  let previousSnapshot: GameState | null = null;
   const uiRoot = createUIRoot();
   sidebarContainer.appendChild(uiRoot);
 
@@ -99,7 +103,11 @@ async function bootstrap(): Promise<void> {
   setupTouch((command) => runtime.enqueueCommand(command, 'touch'), canDispatchInput);
 
   runtime.onSnapshot((state) => {
+    if (previousSnapshot) {
+      applySfxForTransition(previousSnapshot, state, sfx);
+    }
     latestState = state;
+    previousSnapshot = state;
     scene.renderSnapshot(state);
     updateHud(state);
   });
