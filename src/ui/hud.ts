@@ -15,10 +15,17 @@ let ledScreenEl: HTMLDivElement | null = null;
 let nextPieceCanvasEl: HTMLCanvasElement | null = null;
 let downloadButtonEl: HTMLButtonElement | null = null;
 let restartButtonEl: HTMLButtonElement | null = null;
+let volumeSliderEl: HTMLInputElement | null = null;
+let volumeMuteButtonEl: HTMLButtonElement | null = null;
+let volumeValueEl: HTMLSpanElement | null = null;
 
 type SetupHudOptions = {
   onDownload?: () => void;
   onRestart?: () => void;
+  initialVolume?: number;
+  initialMuted?: boolean;
+  onVolumeChange?: (volume: number) => void;
+  onVolumeToggleMute?: () => { muted: boolean; volume: number };
 };
 
 export function setupHud(uiRoot: HTMLElement, options: SetupHudOptions = {}): void {
@@ -42,6 +49,33 @@ export function setupHud(uiRoot: HTMLElement, options: SetupHudOptions = {}): vo
         </div>
       </div>
       <div class="hud-controls">
+        <label class="hud-volume-control" aria-label="Sound effects volume">
+          <button
+            type="button"
+            class="hud-volume-mute-button${options.initialMuted ? ' is-muted' : ''}"
+            data-hud-volume-mute
+            aria-label="${options.initialMuted ? 'Unmute sound effects' : 'Mute sound effects'}"
+            title="${options.initialMuted ? 'Unmute sound effects' : 'Mute sound effects'}"
+          >
+            <svg class="hud-volume-icon" viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+              <path d="M4 10v4h4l5 4V6l-5 4H4z" />
+              <path d="M16 9c1.3 1 2 2.3 2 3s-.7 2-2 3" />
+              <path d="M18.5 6.5c2.2 1.8 3.5 4 3.5 5.5s-1.3 3.7-3.5 5.5" />
+              <path class="hud-volume-icon-muted-line" d="M3 3l18 18" />
+            </svg>
+          </button>
+          <input
+            type="range"
+            class="hud-volume-slider"
+            data-hud-volume
+            min="0"
+            max="1"
+            step="0.01"
+            value="${String(options.initialVolume ?? 0.65)}"
+            aria-label="Sound effects volume"
+          />
+          <span class="hud-volume-value" data-hud-volume-value>${Math.round((options.initialVolume ?? 0.65) * 100)}%</span>
+        </label>
         <button
           type="button"
           class="hud-control-button hud-control-restart"
@@ -85,6 +119,9 @@ export function setupHud(uiRoot: HTMLElement, options: SetupHudOptions = {}): vo
   nextPieceCanvasEl = hud.querySelector<HTMLCanvasElement>('[data-hud-next-piece]');
   downloadButtonEl = hud.querySelector<HTMLButtonElement>('[data-hud-download]');
   restartButtonEl = hud.querySelector<HTMLButtonElement>('[data-hud-restart]');
+  volumeSliderEl = hud.querySelector<HTMLInputElement>('[data-hud-volume]');
+  volumeMuteButtonEl = hud.querySelector<HTMLButtonElement>('[data-hud-volume-mute]');
+  volumeValueEl = hud.querySelector<HTMLSpanElement>('[data-hud-volume-value]');
 
   if (downloadButtonEl) {
     downloadButtonEl.addEventListener('click', () => {
@@ -94,6 +131,40 @@ export function setupHud(uiRoot: HTMLElement, options: SetupHudOptions = {}): vo
   if (restartButtonEl) {
     restartButtonEl.addEventListener('click', () => {
       options.onRestart?.();
+    });
+  }
+  if (volumeSliderEl) {
+    volumeSliderEl.addEventListener('input', () => {
+      const parsed = Number.parseFloat(volumeSliderEl?.value ?? '0.65');
+      const nextVolume = Number.isFinite(parsed) ? parsed : 0.65;
+      options.onVolumeChange?.(nextVolume);
+      if (volumeValueEl) {
+        volumeValueEl.textContent = `${Math.round(nextVolume * 100)}%`;
+      }
+      if (volumeMuteButtonEl) {
+        const muted = nextVolume <= 0.0001;
+        volumeMuteButtonEl.classList.toggle('is-muted', muted);
+        volumeMuteButtonEl.setAttribute('aria-label', muted ? 'Unmute sound effects' : 'Mute sound effects');
+        volumeMuteButtonEl.title = muted ? 'Unmute sound effects' : 'Mute sound effects';
+      }
+    });
+  }
+  if (volumeMuteButtonEl) {
+    const muteButton = volumeMuteButtonEl;
+    muteButton.addEventListener('click', () => {
+      const result = options.onVolumeToggleMute?.();
+      if (!result) {
+        return;
+      }
+      if (volumeSliderEl) {
+        volumeSliderEl.value = String(result.volume);
+      }
+      if (volumeValueEl) {
+        volumeValueEl.textContent = `${Math.round(result.volume * 100)}%`;
+      }
+      muteButton.classList.toggle('is-muted', result.muted);
+      muteButton.setAttribute('aria-label', result.muted ? 'Unmute sound effects' : 'Mute sound effects');
+      muteButton.title = result.muted ? 'Unmute sound effects' : 'Mute sound effects';
     });
   }
 }

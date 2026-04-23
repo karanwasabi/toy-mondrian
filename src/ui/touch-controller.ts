@@ -16,7 +16,11 @@ type TouchState = {
   movedDistance: number;
 };
 
-export function setupTouch(dispatch: Dispatch, canDispatch: CanDispatch = () => true): () => void {
+export function setupTouch(
+  dispatch: Dispatch,
+  canDispatch: CanDispatch = () => true,
+  touchTarget: HTMLElement = document.body
+): () => void {
   let activeTouchId: number | null = null;
   let touchState: TouchState | null = null;
 
@@ -124,16 +128,16 @@ export function setupTouch(dispatch: Dispatch, canDispatch: CanDispatch = () => 
     touchState = null;
   };
 
-  document.body.addEventListener('touchstart', onTouchStart, { passive: false });
-  document.body.addEventListener('touchmove', onTouchMove, { passive: false });
-  document.body.addEventListener('touchend', onTouchEnd, { passive: false });
-  document.body.addEventListener('touchcancel', onTouchCancel, { passive: false });
+  touchTarget.addEventListener('touchstart', onTouchStart, { passive: false });
+  touchTarget.addEventListener('touchmove', onTouchMove, { passive: false });
+  touchTarget.addEventListener('touchend', onTouchEnd, { passive: false });
+  touchTarget.addEventListener('touchcancel', onTouchCancel, { passive: false });
 
   return () => {
-    document.body.removeEventListener('touchstart', onTouchStart);
-    document.body.removeEventListener('touchmove', onTouchMove);
-    document.body.removeEventListener('touchend', onTouchEnd);
-    document.body.removeEventListener('touchcancel', onTouchCancel);
+    touchTarget.removeEventListener('touchstart', onTouchStart);
+    touchTarget.removeEventListener('touchmove', onTouchMove);
+    touchTarget.removeEventListener('touchend', onTouchEnd);
+    touchTarget.removeEventListener('touchcancel', onTouchCancel);
   };
 }
 

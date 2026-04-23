@@ -87,6 +87,19 @@ async function bootstrap(): Promise<void> {
   });
 
   setupHud(uiRoot, {
+    initialVolume: sfx.getVolume(),
+    initialMuted: sfx.isMuted(),
+    onVolumeChange: (volume) => {
+      sfx.setVolume(volume);
+      sfx.playMove();
+    },
+    onVolumeToggleMute: () => {
+      const result = sfx.toggleMute();
+      if (!result.muted) {
+        sfx.playMove();
+      }
+      return result;
+    },
     onDownload: () => {
       if (!latestState || latestState.phase !== GamePhase.GalleryClosed) {
         return;
@@ -100,7 +113,7 @@ async function bootstrap(): Promise<void> {
 
   const canDispatchInput = (): boolean => runtime.getState().phase !== GamePhase.GalleryClosed;
   setupKeyboard((command) => runtime.enqueueCommand(command, 'keyboard'), canDispatchInput);
-  setupTouch((command) => runtime.enqueueCommand(command, 'touch'), canDispatchInput);
+  setupTouch((command) => runtime.enqueueCommand(command, 'touch'), canDispatchInput, canvasContainer);
 
   runtime.onSnapshot((state) => {
     if (previousSnapshot) {
