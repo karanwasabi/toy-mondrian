@@ -5,8 +5,8 @@ export const GRID_HEIGHT = 20;
 export const GRID_CELL_COUNT = GRID_WIDTH * GRID_HEIGHT;
 
 export const INITIAL_GRAVITY_MS = 1000;
-export const MIN_GRAVITY_MS = 120;
-export const GRAVITY_ACCELERATION_PER_SECOND_MS = 3;
+export const MIN_GRAVITY_MS = 80;
+export const GRAVITY_ACCELERATION_PER_SECOND_MS = 6;
 
 export const PASSIVE_SCORE_PER_SECOND = 5;
 export const LINE_CLEAR_BASE_SCORE = 100;
